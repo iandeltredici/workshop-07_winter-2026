@@ -19,7 +19,7 @@ library(here) # file/folder organization
 library(readxl) # reading .xlsx files
 library(ggeffects) # generating model predictions
 library(gtsummary) # generating summary tables for models
-
+library(flextable)
 # abalone data from Hamilton et al. 2022
 abalone <- read_xlsx(here("data", "Abalone IMTA_growth and pH.xlsx"))
 ```
@@ -40,12 +40,12 @@ H~A~: **pH does predict abalone growth (change in shell surface area per day, mm
 
 ```{r abalone-data-cleaning}
 # 
-abalone_clean <- abalone  
-  # 
-  clean_names()  
-  # 
-  select(mean_p_h, change_in_area_mm2_d_1_25)  
-  # 
+abalone_clean <- abalone |>   #new data frame from abalone dataset
+  # cleaned names with underscores and no caps
+  clean_names() |> 
+  # select only mean_ph and change_in_area columns
+  select(mean_p_h, change_in_area_mm2_d_1_25) |> 
+  # renamed column names
   rename(mean_ph = mean_p_h, 
          change_in_area = change_in_area_mm2_d_1_25)
 ```
@@ -55,20 +55,21 @@ Don't forget to look at your data! Use `View(abalone_clean)` in the _Console_.
 ## c. Exploratory data visualization
 
 ```{r abalone-scatterplot}
-# 
-ggplot(data = abalone_clean, # 
-       aes(x = mean_ph, # 
-           y = change_in_area)) 
-  # 
-  geom_point(size = 4,
+#| message: false
+# base layer ggplot
+ggplot(data = abalone_clean, # data is abalone clean
+       aes(x = mean_ph, # x axis is mean pH (predictor)
+           y = change_in_area)) + #y axis is change in area (response)
+  # add in scatter plot layer
+  geom_point(size = 4, #set size of points
              stroke = 1,
-             fill = "firebrick4",
+             fill = "firebrick4", #change color of points
              shape = 21)
 ```
 
 Where does the missing value come from?  
 
-**insert response here**  
+**The missing value came from tank B1B**  
 
 Don't forget to turn your warnings off either in the individual code chunk or in the YAML at the top of the file.
 
